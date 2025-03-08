@@ -85,7 +85,7 @@ func (a Argon2) Validate(password string) bool {
 	// This is crucial, so that we do not skip the CPU and memory consuption of the KDF and
 	// potentially run into a timing attack.
 	if len(data) < SerializedSettingsLength {
-		data = make([]byte, SerializedSettingsLength+int(DefaultSettings.SaltLength)+int(DefaultSettings.KeyLength))
+		data = make([]byte, SerializedSettingsLength+int(DefaultSettings.SaltLength+DefaultSettings.KeyLength))
 		copy(data, DefaultSettings.Serialize())
 		_, _ = io.ReadFull(rand.Reader, data[SerializedSettingsLength:])
 	}
