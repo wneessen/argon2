@@ -9,6 +9,57 @@ import (
 	"testing"
 )
 
+func TestNewSettings(t *testing.T) {
+	t.Run("new settings with default settings", func(t *testing.T) {
+		settings := NewSettings(DefaultSettings.Memory, DefaultSettings.Time, DefaultSettings.Threads,
+			DefaultSettings.SaltLength, DefaultSettings.KeyLength)
+		if settings.Memory != DefaultSettings.Memory {
+			t.Errorf("new settings for memory is not as expected: got %d, want %d", settings.Memory,
+				DefaultSettings.Memory)
+		}
+		if settings.Time != DefaultSettings.Time {
+			t.Errorf("new settings for time is not as expected: got %d, want %d", settings.Time,
+				DefaultSettings.Time)
+		}
+		if settings.Threads != DefaultSettings.Threads {
+			t.Errorf("new settings for threads is not as expected: got %d, want %d", settings.Threads,
+				DefaultSettings.Threads)
+		}
+		if settings.SaltLength != DefaultSettings.SaltLength {
+			t.Errorf("new settings for salt length is not as expected: got %d, want %d", settings.SaltLength,
+				DefaultSettings.SaltLength)
+		}
+		if settings.KeyLength != DefaultSettings.KeyLength {
+			t.Errorf("new settings for key length is not as expected: got %d, want %d", settings.KeyLength,
+				DefaultSettings.KeyLength)
+		}
+	})
+	t.Run("new settings with test settings", func(t *testing.T) {
+		settings := NewSettings(testSettings.Memory, testSettings.Time, testSettings.Threads,
+			testSettings.SaltLength, testSettings.KeyLength)
+		if settings.Memory != testSettings.Memory {
+			t.Errorf("new settings for memory is not as expected: got %d, want %d", settings.Memory,
+				testSettings.Memory)
+		}
+		if settings.Time != testSettings.Time {
+			t.Errorf("new settings for time is not as expected: got %d, want %d", settings.Time,
+				testSettings.Time)
+		}
+		if settings.Threads != testSettings.Threads {
+			t.Errorf("new settings for threads is not as expected: got %d, want %d", settings.Threads,
+				testSettings.Threads)
+		}
+		if settings.SaltLength != testSettings.SaltLength {
+			t.Errorf("new settings for salt length is not as expected: got %d, want %d", settings.SaltLength,
+				testSettings.SaltLength)
+		}
+		if settings.KeyLength != testSettings.KeyLength {
+			t.Errorf("new settings for key length is not as expected: got %d, want %d", settings.KeyLength,
+				testSettings.KeyLength)
+		}
+	})
+}
+
 func TestSettings_Serialize(t *testing.T) {
 	t.Run("serializing default settings", func(t *testing.T) {
 		serialized := DefaultSettings.Serialize()
@@ -82,13 +133,7 @@ func TestSettingsFromBytes(t *testing.T) {
 		}
 	})
 	t.Run("deserializing custom settings", func(t *testing.T) {
-		settings := Settings{
-			Memory:     123,
-			Time:       5,
-			Threads:    8,
-			SaltLength: 123,
-			KeyLength:  321,
-		}
+		settings := NewSettings(123, 5, 8, 123, 321)
 		serialized := settings.Serialize()
 		deserialized := SettingsFromBytes(serialized)
 		if settings.Memory != deserialized.Memory {
