@@ -8,7 +8,7 @@ SPDX-PackageSupplier = "Winni Neessen <wn@neessen.dev>"
 SPDX-PackageDownloadLocation = "https://github.com/wneessen/dbenc"
 
 [[annotations]]
-path = ["go.sum"]
+path = ["go.sum", "README.md"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "Winni Neessen <wn@neessen.dev>"
 SPDX-License-Identifier = "MIT"
