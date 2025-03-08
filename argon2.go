@@ -51,24 +51,57 @@ func Derive(password string, settings Settings) (Argon2, error) {
 	return hash, nil
 }
 
-// Validate checks if the provided password matches the Argon2 hash.
+// Validate verifies whether the given password matches the Argon2 hash.
 //
-// This method extracts the serialized settings, salt, and the derived key from the
-// Argon2 hash. It then derives a new key using the given password, salt, and settings,
-// and compares it with the original key stored in the Argon2 hash using constant-time
-// comparison to prevent timing attacks.
+// This method takes a plaintext password and checks if it matches the stored Argon2 hash.
+// It ensures that even if an invalid or zero-length byte slice is passed, the function
+// still executes the Argon2 key derivation function (KDF) with default settings to prevent
+// timing attacks.
+//
+// Steps performed:
+//   - Copies the Argon2 hash data to prevent mutation.
+//   - If the input data is too short or empty, it falls back to `DefaultSettings` and
+//     generates a random salt and key.
+//   - If the stored hash does not match the expected structure (e.g., incorrect key length),
+//     it regenerates random values to avoid leaking information about tampered or invalid hashes.
+//   - Computes the Argon2 key from the provided password using the extracted settings and salt.
+//   - Compares the derived key with the stored key using subtle.ConstantTimeCompare.
 //
 // Parameters:
-//   - password: The password to validate against the Argon2 hash.
+//   - password: The plaintext password to validate against the Argon2 hash.
 //
 // Returns:
-//   - A boolean indicating whether the provided password is valid. Returns true if the
-//     derived key matches the key in the Argon2 hash, false otherwise.
+//   - true if the password is valid and matches the stored Argon2 hash.
+//
+// Security considerations:
+//   - Even when an invalid hash is provided, the function executes the Argon2 KDF to
+//     prevent timing attacks that could hint at the validity of stored data.
+//   - Uses constant-time comparison to mitigate side-channel attacks.
 func (a Argon2) Validate(password string) bool {
-	settings := SettingsFromBytes(a[:SerializedSize])
-	salt := a[SerializedSize : SerializedSize+int(settings.SaltLength)]
-	key := a[SerializedSize+int(settings.SaltLength) : SerializedSize+int(settings.SaltLength)+int(settings.KeyLength)]
+	data := make([]byte, len(a))
+	copy(data, a)
 
+	// If an invalid length or zero byte slice is passed, we fall back to the DefaultSettings.
+	// This is crucial, so that we do not skip the CPU and memory consuption of the KDF and
+	// potentially run into a timing attack.
+	if len(data) < SerializedSize {
+		data = make([]byte, SerializedSize+int(DefaultSettings.SaltLength)+int(DefaultSettings.KeyLength))
+		copy(data, DefaultSettings.Serialize())
+		_, _ = io.ReadFull(rand.Reader, data[SerializedSize:])
+	}
+
+	// If the byte slice does not provide the expected key length we can assume that the data
+	// is either corrupted or tampered with. In this case we also have potential for a timing
+	// attack and apply the same logic as with empty data and always execute the Argon2 KDF.
+	settings := SettingsFromBytes(data[:SerializedSize])
+	if len(data) != SerializedSize+int(settings.SaltLength+settings.KeyLength) {
+		data = make([]byte, SerializedSize+int(settings.SaltLength+settings.KeyLength))
+		copy(data, data[:SerializedSize])
+		_, _ = io.ReadFull(rand.Reader, data[SerializedSize:])
+	}
+
+	salt := data[SerializedSize : SerializedSize+int(settings.SaltLength)]
+	key := data[SerializedSize+int(settings.SaltLength) : SerializedSize+int(settings.SaltLength+settings.KeyLength)]
 	derived := argon2.IDKey([]byte(password), salt, settings.Time, settings.Memory, settings.Threads,
 		settings.KeyLength)
 
