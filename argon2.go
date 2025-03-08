@@ -51,6 +51,60 @@ func Derive(password string, settings Settings) (Argon2, error) {
 	return hash, nil
 }
 
+// Salt extracts and returns the salt from the Argon2 hash.
+//
+// This method retrieves the salt used during the Argon2 key derivation process.
+// If the stored Argon2 hash is shorter than the expected serialized settings length,
+// it returns an empty byte slice.
+//
+// Steps performed:
+//   - Copies the Argon2 hash to avoid mutating the original data.
+//   - Checks if the data length is valid; if not, returns an empty slice.
+//   - Extracts the Settings from the serialized portion of the hash.
+//   - Returns the salt portion of the hash based on the extracted settings.
+//
+// Returns:
+//   - A byte slice containing the salt extracted from the Argon2 hash.
+//   - If the stored data is invalid or too short, an empty slice is returned.
+func (a Argon2) Salt() []byte {
+	data := make([]byte, len(a))
+	copy(data, a)
+
+	if len(data) < SerializedSettingsLength {
+		return []byte{}
+	}
+
+	settings := SettingsFromBytes(data[:SerializedSettingsLength])
+	return data[SerializedSettingsLength : SerializedSettingsLength+int(settings.SaltLength)]
+}
+
+// Key extracts and returns the derived key from the Argon2 hash.
+//
+// This method retrieves the key that was generated during the Argon2 key derivation process.
+// If the stored Argon2 hash is shorter than the expected serialized settings length,
+// it returns an empty byte slice.
+//
+// Steps performed:
+//   - Copies the Argon2 hash to avoid modifying the original data.
+//   - Checks if the data length is valid; if not, returns an empty slice.
+//   - Extracts the Settings from the serialized portion of the hash.
+//   - Returns the derived key portion of the hash based on the extracted settings.
+//
+// Returns:
+//   - A byte slice containing the derived key extracted from the Argon2 hash.
+//   - If the stored data is invalid or too short, an empty slice is returned.
+func (a Argon2) Key() []byte {
+	data := make([]byte, len(a))
+	copy(data, a)
+
+	if len(data) < SerializedSettingsLength {
+		return []byte{}
+	}
+
+	settings := SettingsFromBytes(data[:SerializedSettingsLength])
+	return data[SerializedSettingsLength+int(settings.SaltLength) : SerializedSettingsLength+int(settings.SaltLength+settings.KeyLength)]
+}
+
 // Validate verifies whether the given password matches the Argon2 hash.
 //
 // This method takes a plaintext password and checks if it matches the stored Argon2 hash.
