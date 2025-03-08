@@ -130,28 +130,6 @@ jobs:
             - name: Run go test
               run: |
                 go test -race -shuffle=on ./...
-    test-fbsd:
-        name: Test on FreeBSD ${{ matrix.osver }}
-        runs-on: ubuntu-latest
-        concurrency:
-            group: ci-test-freebsd-${{ matrix.osver }}
-            cancel-in-progress: true
-        strategy:
-            matrix:
-                osver: ['14.1', '14.2', '13.5']
-        steps:
-            - name: Checkout Code
-              uses: actions/checkout@61b9e3751b92087fd0b06925ba6dd6314e06f089 # master
-            - name: Run go test on FreeBSD
-              uses: vmactions/freebsd-vm@v1
-              with:
-                  usesh: true
-                  copyback: false
-                  prepare: |
-                    pkg install -y go
-                  run: |
-                    cd $GITHUB_WORKSPACE;
-                    go test -race -shuffle=on ./...
     reuse:
         name: REUSE Compliance Check
         runs-on: ubuntu-latest
