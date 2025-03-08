@@ -5,6 +5,7 @@
 package argon2
 
 import (
+	"bytes"
 	"crypto/rand"
 	"errors"
 	"testing"
@@ -60,7 +61,52 @@ func TestDerive(t *testing.T) {
 	})
 }
 
-func TestValidate(t *testing.T) {
+func TestArgon2_Salt(t *testing.T) {
+	t.Run("salt with static values", func(t *testing.T) {
+		argon := Argon2(testDerived)
+		salt := argon.Salt()
+		if len(salt) != int(testSettings.SaltLength) {
+			t.Fatalf("salt is not the correct length, got: %d, want: %d", len(salt), int(testSettings.SaltLength))
+		}
+		want := []byte{0xf2, 0xe0, 0x9f, 0xac, 0xf9, 0xe2, 0x1a, 0x22, 0x68, 0x94, 0xa1, 0xd9, 0x7b, 0xd6, 0xcf, 0xfb}
+		if !bytes.Equal(salt, want) {
+			t.Errorf("salt is not as expected, got: %x, want: %x", salt, want)
+		}
+	})
+	t.Run("salt with nil value", func(t *testing.T) {
+		argon := Argon2{}
+		salt := argon.Salt()
+		if len(salt) != 0 {
+			t.Fatalf("salt is not the correct length, got: %d, want: %d", len(salt), 0)
+		}
+	})
+}
+
+func TestArgon2_Key(t *testing.T) {
+	t.Run("key with static values", func(t *testing.T) {
+		argon := Argon2(testDerived)
+		key := argon.Key()
+		if len(key) != int(testSettings.KeyLength) {
+			t.Fatalf("key is not the correct length, got: %d, want: %d", len(key), int(testSettings.KeyLength))
+		}
+		want := []byte{
+			0xae, 0xbd, 0x76, 0x21, 0x80, 0xc1, 0x7c, 0x87, 0xbd, 0xbd, 0x57, 0xa9, 0xef, 0xb2,
+			0xc9, 0xb7, 0x9f, 0x81, 0x0d, 0xaf, 0x4f, 0xab, 0x55, 0xb6, 0x7a, 0x70, 0x5f, 0xed, 0x52, 0x21, 0xdf, 0xb3,
+		}
+		if !bytes.Equal(key, want) {
+			t.Errorf("key is not as expected, got: %x, want: %x", key, want)
+		}
+	})
+	t.Run("key with nil value", func(t *testing.T) {
+		argon := Argon2{}
+		key := argon.Key()
+		if len(key) != 0 {
+			t.Fatalf("key is not the correct length, got: %d, want: %d", len(key), 0)
+		}
+	})
+}
+
+func TestArgon2_Validate(t *testing.T) {
 	t.Run("validate succeeds", func(t *testing.T) {
 		derived, err := Derive(testPassPhrase, testSettings)
 		if err != nil {
