@@ -59,6 +59,31 @@ var DefaultSettings = Settings{
 	KeyLength:  32,
 }
 
+// NewSettings creates a new Settings struct with the specified parameters.
+//
+// This function initializes a Settings struct with the given memory, time, threads,
+// salt length, and key length values. It provides a convenient way to configure Argon2
+// key derivation settings.
+//
+// Parameters:
+//   - mem: The amount of memory (in KB) to be used by the Argon2 algorithm.
+//   - time: The number of iterations (or passes) for Argon2.
+//   - threads: The number of parallel threads used during hashing.
+//   - saltLen: The length of the salt in bytes.
+//   - keyLen: The length of the derived key in bytes.
+//
+// Returns:
+//   - A Settings struct initialized with the provided values.
+func NewSettings(mem, time uint32, threads uint8, saltLen, keyLen uint32) Settings {
+	return Settings{
+		Memory:     mem,
+		Time:       time,
+		Threads:    threads,
+		SaltLength: saltLen,
+		KeyLength:  keyLen,
+	}
+}
+
 // Serialize converts the Settings struct into a byte slice.
 //
 // This method serializes the fields of the Settings struct into a byte slice using
