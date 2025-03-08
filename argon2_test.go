@@ -12,22 +12,38 @@ import (
 
 var (
 	testDerived = []byte{
-		0x00, 0x00, 0x18, 0x00, 0x02, 0x00, 0x00, 0x00, 0x04, 0x00, 0x10, 0x00, 0x00, 0x00, 0x20, 0x00,
-		0x00, 0x00, 0x4e, 0x02, 0x30, 0xe2, 0xd5, 0xb3, 0x11, 0x14, 0x82, 0xab, 0xa2, 0x9e, 0xe6, 0x73,
-		0x20, 0x05, 0x96, 0x55, 0x41, 0xda, 0xa5, 0x80, 0x0e, 0x6f, 0xbf, 0xb1, 0xc1, 0xdf, 0xec, 0x02,
-		0x4c, 0x65, 0xb1, 0xff, 0xf0, 0x7b, 0xbd, 0x30, 0x1e, 0x01, 0x80, 0x60, 0xb7, 0x08, 0x4e, 0x6a,
-		0xc0, 0x91,
+		0x00, 0x00, 0x04, 0x00, 0x01, 0x00, 0x00, 0x00, 0x04, 0x00, 0x10, 0x00, 0x00, 0x00, 0x20, 0x00,
+		0x00, 0x00, 0xf2, 0xe0, 0x9f, 0xac, 0xf9, 0xe2, 0x1a, 0x22, 0x68, 0x94, 0xa1, 0xd9, 0x7b, 0xd6,
+		0xcf, 0xfb, 0xae, 0xbd, 0x76, 0x21, 0x80, 0xc1, 0x7c, 0x87, 0xbd, 0xbd, 0x57, 0xa9, 0xef, 0xb2,
+		0xc9, 0xb7, 0x9f, 0x81, 0x0d, 0xaf, 0x4f, 0xab, 0x55, 0xb6, 0x7a, 0x70, 0x5f, 0xed, 0x52, 0x21,
+		0xdf, 0xb3,
 	}
 	testPassPhrase = "Sup3rS3cuReP4$.Phr4$e!"
+	testSettings   = Settings{
+		Memory:     256 * 1024,
+		Time:       1,
+		Threads:    4,
+		SaltLength: 16,
+		KeyLength:  32,
+	}
 )
 
 func TestDerive(t *testing.T) {
-	t.Run("Argon2ID derive succeeds", func(t *testing.T) {
+	t.Run("Argon2ID derive succeeds with default settings", func(t *testing.T) {
 		derived, err := Derive(testPassPhrase, DefaultSettings)
 		if err != nil {
 			t.Fatalf("failed to derive hash from password string: %s", err.Error())
 		}
-		if len(derived) != SerializedSize+int(DefaultSettings.SaltLength)+int(DefaultSettings.KeyLength) {
+		if len(derived) != SerializedSettingsLength+int(DefaultSettings.SaltLength)+int(DefaultSettings.KeyLength) {
+			t.Fatal("derived hash is not the correct length")
+		}
+	})
+	t.Run("Argon2ID derive succeeds with test settings", func(t *testing.T) {
+		derived, err := Derive(testPassPhrase, testSettings)
+		if err != nil {
+			t.Fatalf("failed to derive hash from password string: %s", err.Error())
+		}
+		if len(derived) != SerializedSettingsLength+int(testSettings.SaltLength+testSettings.KeyLength) {
 			t.Fatal("derived hash is not the correct length")
 		}
 	})
@@ -37,7 +53,7 @@ func TestDerive(t *testing.T) {
 			rand.Reader = originalRandReader
 		})
 		rand.Reader = failReader{}
-		_, err := Derive(testPassPhrase, DefaultSettings)
+		_, err := Derive(testPassPhrase, testSettings)
 		if err == nil {
 			t.Fatal("derive should have failed with broken reader")
 		}
@@ -46,7 +62,7 @@ func TestDerive(t *testing.T) {
 
 func TestValidate(t *testing.T) {
 	t.Run("validate succeeds", func(t *testing.T) {
-		derived, err := Derive(testPassPhrase, DefaultSettings)
+		derived, err := Derive(testPassPhrase, testSettings)
 		if err != nil {
 			t.Fatalf("failed to derive hash from password string: %s", err.Error())
 		}

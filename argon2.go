@@ -40,13 +40,13 @@ func Derive(password string, settings Settings) (Argon2, error) {
 	}
 
 	serialized := settings.Serialize()
-	hashSize := SerializedSize + int(settings.SaltLength+settings.KeyLength)
+	hashSize := SerializedSettingsLength + int(settings.SaltLength+settings.KeyLength)
 	hash := make([]byte, hashSize)
 	copy(hash, serialized)
-	copy(hash[SerializedSize:], salt)
+	copy(hash[SerializedSettingsLength:], salt)
 	key := argon2.IDKey([]byte(password), salt, settings.Time, settings.Memory, settings.Threads,
 		settings.KeyLength)
-	copy(hash[SerializedSize+int(settings.SaltLength):hashSize], key)
+	copy(hash[SerializedSettingsLength+int(settings.SaltLength):hashSize], key)
 
 	return hash, nil
 }
@@ -84,24 +84,24 @@ func (a Argon2) Validate(password string) bool {
 	// If an invalid length or zero byte slice is passed, we fall back to the DefaultSettings.
 	// This is crucial, so that we do not skip the CPU and memory consuption of the KDF and
 	// potentially run into a timing attack.
-	if len(data) < SerializedSize {
-		data = make([]byte, SerializedSize+int(DefaultSettings.SaltLength)+int(DefaultSettings.KeyLength))
+	if len(data) < SerializedSettingsLength {
+		data = make([]byte, SerializedSettingsLength+int(DefaultSettings.SaltLength)+int(DefaultSettings.KeyLength))
 		copy(data, DefaultSettings.Serialize())
-		_, _ = io.ReadFull(rand.Reader, data[SerializedSize:])
+		_, _ = io.ReadFull(rand.Reader, data[SerializedSettingsLength:])
 	}
 
 	// If the byte slice does not provide the expected key length we can assume that the data
 	// is either corrupted or tampered with. In this case we also have potential for a timing
 	// attack and apply the same logic as with empty data and always execute the Argon2 KDF.
-	settings := SettingsFromBytes(data[:SerializedSize])
-	if len(data) != SerializedSize+int(settings.SaltLength+settings.KeyLength) {
-		data = make([]byte, SerializedSize+int(settings.SaltLength+settings.KeyLength))
-		copy(data, data[:SerializedSize])
-		_, _ = io.ReadFull(rand.Reader, data[SerializedSize:])
+	settings := SettingsFromBytes(data[:SerializedSettingsLength])
+	if len(data) != SerializedSettingsLength+int(settings.SaltLength+settings.KeyLength) {
+		data = make([]byte, SerializedSettingsLength+int(settings.SaltLength+settings.KeyLength))
+		copy(data, data[:SerializedSettingsLength])
+		_, _ = io.ReadFull(rand.Reader, data[SerializedSettingsLength:])
 	}
 
-	salt := data[SerializedSize : SerializedSize+int(settings.SaltLength)]
-	key := data[SerializedSize+int(settings.SaltLength) : SerializedSize+int(settings.SaltLength+settings.KeyLength)]
+	salt := data[SerializedSettingsLength : SerializedSettingsLength+int(settings.SaltLength)]
+	key := data[SerializedSettingsLength+int(settings.SaltLength) : SerializedSettingsLength+int(settings.SaltLength+settings.KeyLength)]
 	derived := argon2.IDKey([]byte(password), salt, settings.Time, settings.Memory, settings.Threads,
 		settings.KeyLength)
 
