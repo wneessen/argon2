@@ -46,16 +46,16 @@ const SerializedSize = 18
 // for most general use cases.
 //
 // The default settings are as follows:
-//   - Memory: 128 MB (128 * 1024 KB)
-//   - Time: 3 iterations
+//   - Memory: 1536 MB (1536 * 1024 KB)
+//   - Time: 2 iterations
 //   - Threads: 4 parallel threads
-//   - SaltLength: 32 bytes for the salt
+//   - SaltLength: 16 bytes for the salt
 //   - KeyLength: 32 bytes for the derived key
 var DefaultSettings = Settings{
-	Memory:     128 * 1024,
-	Time:       3,
+	Memory:     1536 * 1024,
+	Time:       2,
 	Threads:    4,
-	SaltLength: 32,
+	SaltLength: 16,
 	KeyLength:  32,
 }
 

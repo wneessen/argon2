@@ -15,10 +15,7 @@ func TestSettings_Serialize(t *testing.T) {
 		if len(serialized) != SerializedSize {
 			t.Fatal("serialized settings is not the correct length")
 		}
-		want := []byte{
-			0x00, 0x00, 0x02, 0x00, 0x03, 0x00, 0x00, 0x00, 0x04, 0x00, 0x20, 0x00, 0x00,
-			0x00, 0x20, 0x00, 0x00, 0x00,
-		}
+		want := testDerived[:SerializedSize]
 		if !bytes.Equal(serialized, want) {
 			t.Errorf("serialized settings is not as expected: got %x, want %x", serialized, want)
 		}
