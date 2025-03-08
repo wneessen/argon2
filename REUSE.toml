@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: 2024 Winni Neessen <wn@neessen.dev>
+#
+# SPDX-License-Identifier: MIT
+
+version = 1
+SPDX-PackageName = "argon2"
+SPDX-PackageSupplier = "Winni Neessen <wn@neessen.dev>"
+SPDX-PackageDownloadLocation = "https://github.com/wneessen/dbenc"
+
+[[annotations]]
+path = ["go.sum"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Winni Neessen <wn@neessen.dev>"
+SPDX-License-Identifier = "MIT"
