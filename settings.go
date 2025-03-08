@@ -34,9 +34,9 @@ type Settings struct {
 	KeyLength  uint32
 }
 
-// SerializedSize defines the fixed size in bytes required to serialize the Settings struct using
+// SerializedSettingsLength defines the fixed size in bytes required to serialize the Settings struct using
 // little-endian encoding.
-const SerializedSize = 18
+const SerializedSettingsLength = 18
 
 // DefaultSettings is the default configuration for Argon2 hashing.
 //
@@ -46,16 +46,16 @@ const SerializedSize = 18
 // for most general use cases.
 //
 // The default settings are as follows:
-//   - Memory: 128 MB (128 * 1024 KB)
-//   - Time: 3 iterations
+//   - Memory: 1536 MB (1536 * 1024 KB)
+//   - Time: 2 iterations
 //   - Threads: 4 parallel threads
-//   - SaltLength: 32 bytes for the salt
+//   - SaltLength: 16 bytes for the salt
 //   - KeyLength: 32 bytes for the derived key
 var DefaultSettings = Settings{
-	Memory:     128 * 1024,
-	Time:       3,
+	Memory:     1024 * 1024,
+	Time:       2,
 	Threads:    4,
-	SaltLength: 32,
+	SaltLength: 16,
 	KeyLength:  32,
 }
 
@@ -71,12 +71,12 @@ var DefaultSettings = Settings{
 //   - SaltLength (4 bytes)
 //   - KeyLength (4 bytes)
 //
-// The total size of the resulting byte slice is determined by the constant `SerializedSize`.
+// The total size of the resulting byte slice is determined by the constant `SerializedSettingsLength`.
 //
 // Returns:
 //   - A byte slice containing the serialized Settings struct in little-endian byte order.
 func (s Settings) Serialize() []byte {
-	buffer := make([]byte, SerializedSize)
+	buffer := make([]byte, SerializedSettingsLength)
 	binary.LittleEndian.PutUint32(buffer[0:4], s.Memory)
 	binary.LittleEndian.PutUint32(buffer[4:8], s.Time)
 	binary.LittleEndian.PutUint16(buffer[8:10], uint16(s.Threads))

@@ -12,13 +12,23 @@ import (
 func TestSettings_Serialize(t *testing.T) {
 	t.Run("serializing default settings", func(t *testing.T) {
 		serialized := DefaultSettings.Serialize()
-		if len(serialized) != SerializedSize {
+		if len(serialized) != SerializedSettingsLength {
 			t.Fatal("serialized settings is not the correct length")
 		}
 		want := []byte{
-			0x00, 0x00, 0x02, 0x00, 0x03, 0x00, 0x00, 0x00, 0x04, 0x00, 0x20, 0x00, 0x00,
+			0x00, 0x00, 0x10, 0x00, 0x02, 0x00, 0x00, 0x00, 0x04, 0x00, 0x10, 0x00, 0x00,
 			0x00, 0x20, 0x00, 0x00, 0x00,
 		}
+		if !bytes.Equal(serialized, want) {
+			t.Errorf("serialized settings is not as expected: got %x, want %x", serialized, want)
+		}
+	})
+	t.Run("serializing test settings", func(t *testing.T) {
+		serialized := testSettings.Serialize()
+		if len(serialized) != SerializedSettingsLength {
+			t.Fatal("serialized settings is not the correct length")
+		}
+		want := testDerived[:SerializedSettingsLength]
 		if !bytes.Equal(serialized, want) {
 			t.Errorf("serialized settings is not as expected: got %x, want %x", serialized, want)
 		}
@@ -32,7 +42,7 @@ func TestSettings_Serialize(t *testing.T) {
 			KeyLength:  321,
 		}
 		serialized := settings.Serialize()
-		if len(serialized) != SerializedSize {
+		if len(serialized) != SerializedSettingsLength {
 			t.Fatal("serialized settings is not the correct length")
 		}
 		want := []byte{
