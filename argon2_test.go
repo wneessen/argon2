@@ -34,7 +34,7 @@ func TestDerive(t *testing.T) {
 		if err != nil {
 			t.Fatalf("failed to derive hash from password string: %s", err.Error())
 		}
-		if len(derived) != SerializedSettingsLength+int(DefaultSettings.SaltLength)+int(DefaultSettings.KeyLength) {
+		if len(derived) != SerializedSettingsLength+int(DefaultSettings.SaltLength+DefaultSettings.KeyLength) {
 			t.Fatal("derived hash is not the correct length")
 		}
 	})

@@ -25,9 +25,9 @@ func (a *Argon2) Scan(src any) error {
 			return fmt.Errorf("invalid Argon2 hash length, got: %d, expected: %d", len(src), SerializedSettingsLength)
 		}
 		settings := SettingsFromBytes(src[:SerializedSettingsLength])
-		if len(src) != SerializedSettingsLength+int(settings.SaltLength)+int(settings.KeyLength) {
+		if len(src) != SerializedSettingsLength+int(settings.SaltLength+settings.KeyLength) {
 			return fmt.Errorf("invalid Argon2 hash length, got: %d, expected: %d", len(src),
-				SerializedSettingsLength+int(settings.SaltLength)+int(settings.KeyLength))
+				SerializedSettingsLength+int(settings.SaltLength+settings.KeyLength))
 		}
 		*a = src
 	default:
