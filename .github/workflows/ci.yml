@@ -72,7 +72,7 @@ jobs:
             - name: Checkout Code
               uses: actions/checkout@61b9e3751b92087fd0b06925ba6dd6314e06f089 # master
             - name: golangci-lint
-              uses: golangci/golangci-lint-action@4696ba8babb6127d732c3c6dde519db15edab9ea # v6.5.1
+              uses: golangci/golangci-lint-action@55c2c1448f86e01eaae002a5a3a9624417608d84 # v6.5.2
               with:
                   version: latest
     dependency-review:
