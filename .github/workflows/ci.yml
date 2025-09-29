@@ -89,7 +89,7 @@ jobs:
             - name: Checkout Code
               uses: actions/checkout@61b9e3751b92087fd0b06925ba6dd6314e06f089 # master
             - name: 'Dependency Review'
-              uses: actions/dependency-review-action@595b5aeba73380359d98a5e087f648dbb0edce1b # v4.7.3
+              uses: actions/dependency-review-action@56339e523c0409420f6c2c9a2f4292bbb3c07dd3 # v4.8.0
               with:
                   base-ref: ${{ github.event.pull_request.base.sha || 'main' }}
                   head-ref: ${{ github.event.pull_request.head.sha || github.ref }}
