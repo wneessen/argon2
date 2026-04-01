@@ -31,7 +31,7 @@ jobs:
                 go: ['1.26']
         steps:
             - name: Harden Runner
-              uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+              uses: step-security/harden-runner@fe104658747b27e96e4f7e80cd0a94068e53901d # v2.16.1
               with:
                   egress-policy: audit
             - name: Checkout Code
@@ -61,7 +61,7 @@ jobs:
                 go: ['1.26']
         steps:
             - name: Harden Runner
-              uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+              uses: step-security/harden-runner@fe104658747b27e96e4f7e80cd0a94068e53901d # v2.16.1
               with:
                   egress-policy: audit
             - name: Setup go
@@ -83,7 +83,7 @@ jobs:
             cancel-in-progress: true
         steps:
             - name: Harden Runner
-              uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+              uses: step-security/harden-runner@fe104658747b27e96e4f7e80cd0a94068e53901d # v2.16.1
               with:
                   egress-policy: audit
             - name: Checkout Code
@@ -101,7 +101,7 @@ jobs:
             cancel-in-progress: true
         steps:
             - name: Harden Runner
-              uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+              uses: step-security/harden-runner@fe104658747b27e96e4f7e80cd0a94068e53901d # v2.16.1
               with:
                   egress-policy: audit
             - name: Run govulncheck
@@ -118,7 +118,7 @@ jobs:
                 go: ['1.25', '1.26']
         steps:
             - name: Harden Runner
-              uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+              uses: step-security/harden-runner@fe104658747b27e96e4f7e80cd0a94068e53901d # v2.16.1
               with:
                   egress-policy: audit
             - name: Checkout Code
@@ -138,7 +138,7 @@ jobs:
             cancel-in-progress: true
         steps:
             - name: Harden Runner
-              uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+              uses: step-security/harden-runner@fe104658747b27e96e4f7e80cd0a94068e53901d # v2.16.1
               with:
                   egress-policy: audit
             - name: Checkout Code
