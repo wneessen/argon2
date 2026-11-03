@@ -30,3 +30,6 @@ go.work.sum
 
 # IDEA stuff
 .idea/
+
+# Mise
+mise.toml
